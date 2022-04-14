@@ -1,6 +1,7 @@
 #ifndef DATA_INIT
 #define DATA_INIT
 
+#include <iostream>
 #include <ctime>
 #include <cmath>
 #include <fstream>
@@ -12,7 +13,7 @@ using namespace std;
 // 在TEST模式下，生成的同类数量都是10
 #ifdef TEST
 
-// #define N		100
+// #define N		10
 #define RESULT	10		// 生成的同类数量
 
 #endif
@@ -26,6 +27,7 @@ private:
 #endif // RESULT
 	int SPLITED_LENGTH = RESULT - 1;	// 记录分割的数量
 	int* _data;							// 记录数据
+	int* _split;
 public:
 	DataInit();
 	~DataInit()	{ delete _data;	}
@@ -37,6 +39,8 @@ public:
 	int* split();
 	// 从生成的数组中挑选数据，写入到文件中
 	void write();
+
+	void showData();
 };
 
 template<size_t N>
@@ -49,7 +53,7 @@ inline DataInit<N>::DataInit()
 	
 	// 初始化数组
 	this->_data = new int[N];
-	for (int i = 0; i < N; i++) { this->_data[i] = i; }
+	for (int i = 0; i < N; i++) { this->_data[i] = i + 1; }
 
 	// 随机打乱数组
 	shuffle();
@@ -65,7 +69,9 @@ void DataInit<N>::shuffle()
 
 	for (int i = 0, temp; i < N; i++)
 	{
-		int indexToSwap = static_cast<double>((rand() % N) * 0.01) * (i + 1);
+		int indexToSwap;
+		while (indexToSwap = static_cast<double>((rand() % N) * 0.01) * (i + 1), indexToSwap > RESULT);
+
 		temp = this->_data[indexToSwap];
 		this->_data[indexToSwap] = this->_data[i];
 		this->_data[i] = temp;
@@ -103,13 +109,14 @@ int* DataInit<N>::split()
 		}
 	}
 
-	return splited;
+	return this->_split =  splited;
 }
 
 template<size_t N>
 void DataInit<N>::write()
 {
-	int sets = rand() % static_cast<int>(pow(2, N));
+	// int sets = rand() % static_cast<int>(pow(2, N));
+	int sets = 100;
 	int* splited_data = split();
 
 	// 打印总数和数据总数
@@ -123,28 +130,38 @@ void DataInit<N>::write()
 		// 如果是H，也就是相克类
 		if (flag)
 		{
-			static int offset = 0;
+			/*static int offset = 0;
 			int value1, value2;
 			int index_mid;
 
-			if (SPLITED_LENGTH == 1)
+			try
 			{
-				value1 = this->_data[rand() % splited_data[0]];
-				value2 = this->_data[rand() % (RESULT - splited_data[0]) + splited_data[0]];
+				if (SPLITED_LENGTH == 1)
+				{
+					value1 = this->_data[rand() % splited_data[0]];
+					value2 = this->_data[rand() % (RESULT - splited_data[0]) + splited_data[0]];
+				}
+				else if (SPLITED_LENGTH == 2)
+				{
+					value1 = this->_data[rand() % splited_data[0]];
+					value2 = this->_data[rand() % (splited_data[1] - splited_data[0]) + splited_data[0]];
+				}
+				else
+				{
+					if (offset >= SPLITED_LENGTH - 2) { offset = 0; }
+					value1 = value2 = 0;
+					while (value1 == value2)
+					{
+						value1 = this->_data[rand() % (splited_data[offset] - (offset == 0 ? 0 : splited_data[offset - 1])) + (offset == 0 ? 0 : splited_data[offset - 1])];
+						value2 = this->_data[rand() % (splited_data[offset + 1] - (offset == 0 ? 0 : splited_data[offset])) + (offset == 0 ? 0 : splited_data[offset])];
+					}
+				}
 			}
-			else if (SPLITED_LENGTH == 2)
+			catch (exception e)
 			{
-				value1 = this->_data[rand() % splited_data[0]];
-				value2 = this->_data[rand() % (splited_data[1] - splited_data[0]) + splited_data[0]];
+				continue;
 			}
-			else
-			{
-				if (offset >= SPLITED_LENGTH - 2) { offset = 0; }
-				value1 = this->_data[rand() % (splited_data[offset] - (offset == 0 ? 0 : splited_data[offset - 1])) + (offset == 0 ? 0 : splited_data[offset - 1])];
-				value2 = this->_data[rand() % (splited_data[offset + 1] - (offset == 0 ? 0 : splited_data[offset])) + (offset == 0 ? 0 : splited_data[offset])];
-			}
-
-			fout << "H " << value1 << "\t" << value2 << endl;
+			fout << "H " << value1 << "\t" << value2 << endl;*/
 		}
 		else
 		{
@@ -160,6 +177,21 @@ void DataInit<N>::write()
 	}
 
 	fout.close();
+}
+
+template<size_t N>
+void DataInit<N>::showData()
+{
+	int j = 0;
+	for (int i = 0; i < N; i++)
+	{
+		cout << _data[i] << "\t";
+		if (_data[i] == _split[j])
+		{
+			cout << endl;
+			j++;
+		}
+	}
 }
 
 #endif

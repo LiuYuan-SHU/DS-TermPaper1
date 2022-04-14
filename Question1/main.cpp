@@ -1,32 +1,28 @@
 #include "DataInit.h"
+#include "FileOpe.h"
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
 
 #define TEST
 
-#define FILE_NAME_IN	"virus.in"
-#define FILE_NAME_OUT	"virus.out"
-
 using namespace std;
 
 void test_DataInit()
 {
-	DataInit<> test;
-	/*int* split = test.split();
-	cout << "split:" << endl;
-	for (int i = 0; i < RESULT - 1; i++)
-	{
-		cout << split[i] << " ";
-	}
-	cout << endl << endl;
+	DataInit<1000> test;
+	test.showData();
+}
 
-	test.write();*/
-
-
+void test_FileOpe_in()
+{
+	FileIn fi;
+	cout << "Finished, result: " << fi.runtime() - 1 << endl;
+	FileOut fout(fi.runtime() - 1);
 }
 
 int main()
 {
 	test_DataInit();
+	test_FileOpe_in();
 }
